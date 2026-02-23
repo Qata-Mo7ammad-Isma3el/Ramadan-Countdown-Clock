@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Working Hours Countdown</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --deep-navy: #0a0e27;
+            --midnight: #0f1538;
+            --royal-purple: #1a1445;
+            --gold: #d4a03c;
+            --gold-light: #e8be5a;
+            --gold-glow: rgba(212, 160, 60, 0.2);
+            --gold-soft: rgba(212, 160, 60, 0.45);
+            --warm-cream: #f5e6c8;
+            --muted-sand: #b8a080;
+            --teal-accent: #2a7a6e;
+            --star-white: #e8dcc8;
+            --card-bg: rgba(26, 20, 69, 0.35);
+            --card-border: rgba(212, 160, 60, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(175deg, #060920 0%, var(--deep-navy) 30%, #120e35 60%, #1a1040 100%);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 50% 10%, rgba(212, 160, 60, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 80% 50% at 30% 80%, rgba(42, 122, 110, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 75% 20%, rgba(100, 60, 150, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ========= Mosque silhouette ========= */
+        .mosque-silhouette {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 180px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .mosque-silhouette svg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ========= Floating Fawanees ========= */
+        .lanterns {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .lantern {
+            position: absolute;
+            animation: lanternFloat 8s ease-in-out infinite;
+        }
+
+        .lantern svg {
+            filter: drop-shadow(0 0 15px rgba(212, 160, 60, 0.25));
+        }
+
+        @keyframes lanternFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-2deg);
+            }
+
+            50% {
+                transform: translateY(-18px) rotate(2deg);
+            }
+        }
+
+        /* ========= Stars ========= */
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--star-white);
+        }
+
+        .star.twinkle {
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .star.twinkle-slow {
+            animation: twinkle 5s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.3);
+            }
+        }
+
+        /* ========= Hilal ========= */
+        .hilal {
+            position: fixed;
+            top: 30px;
+            right: 50px;
+            z-index: 1;
+            pointer-events: none;
+            animation: hilalGlow 4s ease-in-out infinite;
+        }
+
+        .hilal svg {
+            filter: drop-shadow(0 0 20px rgba(212, 160, 60, 0.35)) drop-shadow(0 0 50px rgba(212, 160, 60, 0.15)) drop-shadow(0 0 80px rgba(212, 160, 60, 0.08));
+        }
+
+        @keyframes hilalGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 20px rgba(212, 160, 60, 0.25));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 35px rgba(212, 160, 60, 0.4));
+            }
+        }
+
+        /* ========= Settings Button ========= */
+        .settings-btn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 100;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--muted-sand);
+        }
+
+        .settings-btn:hover {
+            background: rgba(212, 160, 60, 0.1);
+            border-color: rgba(212, 160, 60, 0.35);
+            color: var(--gold);
+            transform: rotate(45deg);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ========= Settings Panel ========= */
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(6, 9, 32, 0.92);
+            backdrop-filter: blur(24px);
+        }
+
+        .settings-overlay.show {
+            display: flex;
+            animation: settingsFadeIn 0.35s ease-out;
+        }
+
+        @keyframes settingsFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .settings-panel {
+            background: linear-gradient(160deg, #131040 0%, #0e0b2e 100%);
+            border: 1px solid rgba(212, 160, 60, 0.15);
+            border-radius: 24px;
+            padding: 36px 40px 32px;
+            width: 90%;
+            max-width: 420px;
+            position: relative;
+            animation: settingsSlide 0.4s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 160, 60, 0.08);
+        }
+
+        @keyframes settingsSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .settings-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(212, 160, 60, 0.06);
+            border: 1px solid rgba(212, 160, 60, 0.12);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-sand);
+            transition: all 0.2s;
+        }
+
+        .settings-close:hover {
+            background: rgba(212, 160, 60, 0.12);
+            border-color: rgba(212, 160, 60, 0.3);
+            color: var(--gold);
+        }
+
+        .settings-close svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .settings-header svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--gold);
+            opacity: 0.7;
+        }
+
+        .settings-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .settings-subtitle {
+            font-size: 0.72rem;
+            color: var(--muted-sand);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group:last-of-type {
+            margin-bottom: 28px;
+        }
+
+        .setting-label {
+            font-size: 0.68rem;
+            font-weight: 400;
+            color: var(--muted-sand);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-label svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 1.8;
+            opacity: 0.65;
+        }
+
+        .setting-select,
+        .setting-time {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(212, 160, 60, 0.04);
+            border: 1px solid rgba(212, 160, 60, 0.12);
+            border-radius: 12px;
+            color: var(--warm-cream);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            outline: none;
+            transition: all 0.25s;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .setting-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%23d4a03c'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .setting-select:focus,
+        .setting-time:focus {
+            border-color: rgba(212, 160, 60, 0.45);
+            box-shadow: 0 0 0 3px rgba(212, 160, 60, 0.08);
+        }
+
+        .setting-select option {
+            background: #131040;
+            color: var(--warm-cream);
+        }
+
+        .setting-time::-webkit-calendar-picker-indicator {
+            filter: invert(0.7) sepia(1) saturate(4) hue-rotate(10deg);
+            cursor: pointer;
+        }
+
+        .time-row {
+            display: flex;
+            gap: 14px;
+        }
+
+        .time-row .setting-group {
+            flex: 1;
+        }
+
+        .settings-save {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold), #c4872a);
+            color: #0a0e27;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .settings-save:hover {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            box-shadow: 0 0 30px rgba(212, 160, 60, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .settings-saved-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(212, 160, 60, 0.12);
+            border: 1px solid rgba(212, 160, 60, 0.25);
+            color: var(--gold);
+            padding: 10px 28px;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-saved-toast svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        .settings-saved-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========= Main Container ========= */
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            animation: fadeUp 1.2s ease-out;
+            width: 90%;
+            max-width: 520px;
+            padding: 30px 0 100px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Basmala */
+        .basmala {
+            font-family: 'Amiri', serif;
+            font-size: 1.6rem;
+            color: var(--gold);
+            opacity: 0.3;
+            margin-bottom: 18px;
+            letter-spacing: 0.05em;
+            direction: rtl;
+        }
+
+        .header-label {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 1rem;
+            color: var(--gold-light);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            opacity: 0.8;
+        }
+
+        .title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 6px;
+            text-shadow: 0 0 50px var(--gold-glow);
+        }
+
+        .subtitle {
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: var(--muted-sand);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+        }
+
+        /* ========= Clock Ring ========= */
+        .clock-ring {
+            width: 270px;
+            height: 270px;
+            margin: 0 auto 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-ring>svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .track {
+            fill: none;
+            stroke: rgba(212, 160, 60, 0.08);
+            stroke-width: 3;
+        }
+
+        .progress {
+            fill: none;
+            stroke: url(#goldGradient);
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-dasharray: 880;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .inner-ring {
+            fill: none;
+            stroke: rgba(212, 160, 60, 0.05);
+            stroke-width: 0.5;
+        }
+
+        .outer-dots {
+            fill: none;
+            stroke: rgba(212, 160, 60, 0.06);
+            stroke-width: 1;
+            stroke-dasharray: 2 14;
+        }
+
+        .time-display {
+            position: relative;
+            z-index: 2;
+        }
+
+        .time-digits {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: var(--warm-cream);
+            letter-spacing: 0.04em;
+            line-height: 1;
+        }
+
+        .time-digits .separator {
+            color: var(--gold);
+            animation: blink 1s step-end infinite;
+            margin: 0 2px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .time-label {
+            font-size: 0.68rem;
+            font-weight: 300;
+            color: var(--muted-sand);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        /* ========= Progress Bar ========= */
+        .progress-bar-section {
+            margin: 0 auto 28px;
+            max-width: 400px;
+        }
+
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-header .pbar-label {
+            font-size: 0.62rem;
+            font-weight: 300;
+            color: var(--muted-sand);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-header .pbar-pct {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(212, 160, 60, 0.06);
+            border-radius: 100px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 160, 60, 0.08);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c4872a, var(--gold), var(--gold-light));
+            border-radius: 100px;
+            transition: width 1s linear;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2));
+            border-radius: 100px;
+        }
+
+        .progress-time-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .progress-time-markers span {
+            font-size: 0.56rem;
+            color: var(--muted-sand);
+            letter-spacing: 0.05em;
+            opacity: 0.5;
+        }
+
+        /* ========= Info Cards ========= */
+        .info-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px 20px;
+            backdrop-filter: blur(10px);
+            min-width: 110px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.3;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .info-card .label {
+            font-size: 0.56rem;
+            font-weight: 300;
+            color: var(--muted-sand);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-card .value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--warm-cream);
+        }
+
+        .info-card .value span {
+            color: var(--gold);
+        }
+
+        /* ========= Status ========= */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 22px;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .status.active {
+            background: rgba(212, 160, 60, 0.08);
+            border: 1px solid rgba(212, 160, 60, 0.2);
+            color: var(--gold);
+        }
+
+        .status.inactive {
+            background: rgba(42, 122, 110, 0.08);
+            border: 1px solid rgba(42, 122, 110, 0.2);
+            color: var(--teal-accent);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status.active .status-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--gold-soft);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px transparent;
+            }
+        }
+
+        .message {
+            font-family: 'Amiri', serif;
+            font-size: 1.15rem;
+            color: var(--muted-sand);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .current-time-display {
+            font-size: 0.65rem;
+            color: var(--muted-sand);
+            letter-spacing: 0.12em;
+            margin-top: 14px;
+            opacity: 0.5;
+        }
+
+        /* ========= Alarm Overlay ========= */
+        .alarm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(6, 9, 32, 0.95);
+            backdrop-filter: blur(28px);
+        }
+
+        .alarm-overlay.show {
+            display: flex;
+            animation: alarmFadeIn 0.6s ease-out;
+        }
+
+        @keyframes alarmFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .alarm-box {
+            text-align: center;
+            padding: 50px 60px;
+            border-radius: 28px;
+            background: linear-gradient(160deg, rgba(26, 20, 69, 0.5), rgba(15, 21, 56, 0.4));
+            border: 1.5px solid rgba(212, 160, 60, 0.25);
+            animation: alarmGlow 2s ease-in-out infinite;
+            max-width: 440px;
+        }
+
+        @keyframes alarmGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 40px rgba(212, 160, 60, 0.08);
+            }
+
+            50% {
+                box-shadow: 0 0 80px rgba(212, 160, 60, 0.18);
+            }
+        }
+
+        .alarm-icon-wrap {
+            margin-bottom: 20px;
+            animation: bellSwing 0.4s ease-in-out infinite alternate;
+            display: inline-block;
+        }
+
+        .alarm-icon-wrap svg {
+            width: 64px;
+            height: 64px;
+            fill: var(--gold);
+        }
+
+        @keyframes bellSwing {
+            0% {
+                transform: rotate(-12deg);
+            }
+
+            100% {
+                transform: rotate(12deg);
+            }
+        }
+
+        .alarm-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .alarm-subtitle {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--muted-sand);
+            margin-bottom: 8px;
+            letter-spacing: 0.06em;
+            line-height: 1.7;
+        }
+
+        .alarm-dua {
+            font-family: 'Amiri', serif;
+            font-size: 1.3rem;
+            color: var(--gold-soft);
+            margin-bottom: 30px;
+        }
+
+        .alarm-dismiss {
+            background: linear-gradient(135deg, var(--gold), #c4872a);
+            color: #0a0e27;
+            border: none;
+            padding: 14px 48px;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-dismiss:hover {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--gold-soft);
+        }
+
+        @media (max-width: 500px) {
+            .title {
+                font-size: 1.6rem;
+            }
+
+            .basmala {
+                font-size: 1.3rem;
+            }
+
+            .clock-ring {
+                width: 210px;
+                height: 210px;
+            }
+
+            .time-digits {
+                font-size: 2.4rem;
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .info-card {
+                min-width: 200px;
+            }
+
+            .alarm-box {
+                padding: 36px 24px;
+                margin: 0 20px;
+            }
+
+            .alarm-title {
+                font-size: 1.8rem;
+            }
+
+            .settings-panel {
+                padding: 28px 24px 24px;
+            }
+
+            .settings-btn {
+                top: 16px;
+                left: 16px;
+            }
+
+            .hilal {
+                top: 14px;
+                right: 18px;
+            }
+
+            .hilal svg {
+                width: 55px;
+                height: 55px;
+            }
+
+            .mosque-silhouette {
+                height: 100px;
+            }
+
+            .lantern svg {
+                width: 22px !important;
+                height: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="stars" id="stars"></div>
+
+    <!-- Hilal -->
+    <div class="hilal">
+        <svg width="75" height="75" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M70 50C70 72.09 52.09 90 30 90C22.46 90 15.44 87.86 9.5 84.14C17.88 91.38 28.86 95.5 40.5 95.5C63.42 95.5 82 76.92 82 54C82 35.36 70.22 19.52 53.72 13.78C63.56 21.42 70 33.92 70 50Z"
+                fill="url(#hilalGrad)" />
+            <path d="M38 18L40.5 12L43 18L49 20.5L43 23L40.5 29L38 23L32 20.5L38 18Z" fill="url(#starGrad)" />
+            <defs>
+                <linearGradient id="hilalGrad" x1="20" y1="15" x2="80" y2="90" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#e8be5a" />
+                    <stop offset="50%" stop-color="#d4a03c" />
+                    <stop offset="100%" stop-color="#c4872a" />
+                </linearGradient>
+                <linearGradient id="starGrad" x1="32" y1="12" x2="49" y2="29" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#f0d080" />
+                    <stop offset="100%" stop-color="#d4a03c" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- Fawanees -->
+    <div class="lanterns" id="lanterns"></div>
+
+    <!-- Mosque Silhouette -->
+    <div class="mosque-silhouette">
+        <svg viewBox="0 0 1440 180" preserveAspectRatio="none" fill="#060920">
+            <rect x="0" y="120" width="1440" height="60" />
+            <rect x="50" y="90" width="40" height="90" />
+            <rect x="100" y="100" width="30" height="80" />
+            <rect x="180" y="85" width="50" height="95" />
+            <rect x="310" y="30" width="12" height="150" />
+            <circle cx="316" cy="28" r="8" />
+            <rect x="313" y="18" width="6" height="12" />
+            <ellipse cx="400" cy="80" rx="50" ry="40" />
+            <rect x="350" y="80" width="100" height="100" />
+            <rect x="396" y="38" width="8" height="15" />
+            <rect x="490" y="35" width="10" height="145" />
+            <circle cx="495" cy="33" r="7" />
+            <rect x="492" y="24" width="6" height="11" />
+            <rect x="560" y="95" width="45" height="85" />
+            <rect x="620" y="105" width="35" height="75" />
+            <rect x="680" y="88" width="55" height="92" />
+            <ellipse cx="820" cy="60" rx="70" ry="55" />
+            <rect x="750" y="60" width="140" height="120" />
+            <rect x="815" y="2" width="10" height="20" />
+            <circle cx="820" cy="2" r="6" />
+            <rect x="940" y="25" width="14" height="155" />
+            <circle cx="947" cy="23" r="9" />
+            <rect x="943" y="12" width="8" height="13" />
+            <rect x="1020" y="92" width="40" height="88" />
+            <rect x="1080" y="100" width="50" height="80" />
+            <rect x="1160" y="88" width="35" height="92" />
+            <ellipse cx="1260" cy="90" rx="35" ry="28" />
+            <rect x="1225" y="90" width="70" height="90" />
+            <rect x="1256" y="60" width="8" height="12" />
+            <rect x="1340" y="95" width="45" height="85" />
+            <rect x="1400" y="105" width="40" height="75" />
+        </svg>
+    </div>
+
+    <!-- Settings Button -->
+    <button class="settings-btn" id="settingsBtn" title="Settings">
+        <svg viewBox="0 0 24 24">
+            <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z" />
+        </svg>
+    </button>
+
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-panel">
+            <button class="settings-close" id="settingsClose">
+                <svg viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="settings-header">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z" />
+                </svg>
+                <div class="settings-title">Settings</div>
+            </div>
+            <div class="settings-subtitle">Customize your countdown</div>
+
+            <div class="setting-group">
+                <div class="setting-label">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    Time Zone
+                </div>
+                <select class="setting-select" id="tzSelect"></select>
+            </div>
+
+            <div class="time-row">
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 18a5 5 0 0 0-10 0" />
+                            <line x1="12" y1="9" x2="12" y2="2" />
+                            <line x1="4.22" y1="10.22" x2="5.64" y2="11.64" />
+                            <line x1="1" y1="18" x2="3" y2="18" />
+                            <line x1="21" y1="18" x2="23" y2="18" />
+                            <line x1="18.36" y1="11.64" x2="19.78" y2="10.22" />
+                            <line x1="23" y1="22" x2="1" y2="22" />
+                            <polyline points="8 6 12 2 16 6" />
+                        </svg>
+                        Start Time
+                    </div>
+                    <input type="time" class="setting-time" id="startTimeInput" value="08:00">
+                </div>
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 18a5 5 0 0 0-10 0" />
+                            <line x1="12" y1="2" x2="12" y2="9" />
+                            <line x1="4.22" y1="10.22" x2="5.64" y2="11.64" />
+                            <line x1="1" y1="18" x2="3" y2="18" />
+                            <line x1="21" y1="18" x2="23" y2="18" />
+                            <line x1="18.36" y1="11.64" x2="19.78" y2="10.22" />
+                            <line x1="23" y1="22" x2="1" y2="22" />
+                            <polyline points="16 6 12 10 8 6" />
+                        </svg>
+                        End Time
+                    </div>
+                    <input type="time" class="setting-time" id="endTimeInput" value="15:00">
+                </div>
+            </div>
+
+            <button class="settings-save" id="settingsSave">Save & Apply</button>
+        </div>
+    </div>
+
+    <!-- Alarm Overlay -->
+    <div class="alarm-overlay" id="alarmOverlay">
+        <div class="alarm-box">
+            <div class="alarm-icon-wrap">
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32 4C32 4 12 20 12 34V56H52V34C52 20 32 4 32 4Z" fill="url(#mosqueGrad)" opacity="0.9" />
+                    <rect x="8" y="56" width="48" height="4" rx="1" fill="currentColor" opacity="0.5" />
+                    <rect x="30" y="0" width="4" height="8" rx="2" fill="currentColor" />
+                    <circle cx="32" cy="7" r="2" fill="currentColor" opacity="0.6" />
+                    <path d="M26 38C26 35 29 32 32 32C35 32 38 35 38 38V50H26V38Z" fill="#0a0e27" opacity="0.5" />
+                    <path d="M20 42C20 40 21.5 38 23 38C24.5 38 26 40 26 42V50H20V42Z" fill="#0a0e27" opacity="0.35" />
+                    <path d="M38 42C38 40 39.5 38 41 38C42.5 38 44 40 44 42V50H38V42Z" fill="#0a0e27" opacity="0.35" />
+                    <rect x="4" y="22" width="6" height="38" rx="1" fill="currentColor" opacity="0.4" />
+                    <rect x="54" y="22" width="6" height="38" rx="1" fill="currentColor" opacity="0.4" />
+                    <circle cx="7" cy="20" r="4" fill="currentColor" opacity="0.35" />
+                    <circle cx="57" cy="20" r="4" fill="currentColor" opacity="0.35" />
+                    <rect x="5.5" y="14" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.3" />
+                    <rect x="55.5" y="14" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.3" />
+                    <defs>
+                        <linearGradient id="mosqueGrad" x1="12" y1="4" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#e8be5a" />
+                            <stop offset="100%" stop-color="#c4872a" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="alarm-title">Go Home Now!</div>
+            <div class="alarm-subtitle">Alhamdulillah — your workday is complete.<br>Time to rest and prepare for Iftar.
+            </div>
+            <div class="alarm-dua">اللَّهُمَّ إِنِّي أَسأَلُكَ الجَنَّةَ</div>
+            <button class="alarm-dismiss" id="alarmDismiss">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="settings-saved-toast" id="toast">
+        <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12" />
+        </svg>
+        Settings saved
+    </div>
+
+    <div class="container">
+        <!-- Basmala -->
+        <div class="basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+
+        <div class="header-label">Ramadan Kareem</div>
+        <div class="title">Working Hours</div>
+        <div class="subtitle" id="subtitleTime">8:00 AM — 3:00 PM</div>
+
+        <div class="clock-ring">
+            <svg viewBox="0 0 300 300">
+                <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#c4872a" />
+                        <stop offset="50%" stop-color="#d4a03c" />
+                        <stop offset="100%" stop-color="#e8be5a" />
+                    </linearGradient>
+                </defs>
+                <circle class="outer-dots" cx="150" cy="150" r="146" />
+                <circle class="track" cx="150" cy="150" r="140" />
+                <circle class="inner-ring" cx="150" cy="150" r="125" />
+                <circle class="progress" id="progress" cx="150" cy="150" r="140" />
+            </svg>
+            <div class="time-display">
+                <div class="time-digits">
+                    <span id="hours">00</span><span class="separator">:</span><span id="minutes">00</span><span
+                        class="separator">:</span><span id="seconds">00</span>
+                </div>
+                <div class="time-label" id="timeLabel">Remaining</div>
+            </div>
+        </div>
+
+        <div class="progress-bar-section">
+            <div class="progress-bar-header">
+                <span class="pbar-label">Day Progress</span>
+                <span class="pbar-pct" id="pbarPct">0%</span>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="pbarFill"></div>
+            </div>
+            <div class="progress-time-markers" id="timeMarkers">
+                <span>8 AM</span><span>9:45</span><span>11:30</span><span>1:15</span><span>3 PM</span>
+            </div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-card">
+                <div class="label">Started</div>
+                <div class="value" id="infoStart"><span>8:00</span> AM</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Ends</div>
+                <div class="value" id="infoEnd"><span>3:00</span> PM</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Progress</div>
+                <div class="value" id="percentDisplay"><span>0</span>%</div>
+            </div>
+        </div>
+
+        <div class="status active" id="statusBadge">
+            <div class="status-dot"></div>
+            <span id="statusText">Working Hours</span>
+        </div>
+        <div class="message" id="message"></div>
+        <div class="current-time-display" id="currentTimeDisplay"></div>
+    </div>
+
+    <!-- SVG Lantern template -->
+    <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="lanternGradA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e8be5a" />
+                <stop offset="100%" stop-color="#c4872a" />
+            </linearGradient>
+            <linearGradient id="lanternGradB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d4a03c" />
+                <stop offset="100%" stop-color="#a06820" />
+            </linearGradient>
+        </defs>
+        <symbol id="fanoos" viewBox="0 0 32 52">
+            <line x1="16" y1="0" x2="16" y2="8" stroke="#d4a03c" stroke-width="1" opacity="0.5" />
+            <path d="M10 8 L22 8 L20 12 L12 12 Z" fill="url(#lanternGradA)" opacity="0.7" />
+            <circle cx="16" cy="6" r="2" fill="#d4a03c" opacity="0.5" />
+            <path d="M12 12 C6 18 6 32 12 40 L20 40 C26 32 26 18 20 12 Z" fill="url(#lanternGradB)" opacity="0.3" />
+            <path d="M13 14 C8 20 8 30 13 38 L14 38 C9 30 9 20 14 14 Z" fill="#e8be5a" opacity="0.15" />
+            <path d="M18 14 C23 20 23 30 18 38 L19 38 C24 30 24 20 19 14 Z" fill="#e8be5a" opacity="0.1" />
+            <ellipse cx="16" cy="26" rx="5" ry="8" fill="#d4a03c" opacity="0.12" />
+            <path d="M12 40 L10 44 L22 44 L20 40 Z" fill="url(#lanternGradA)" opacity="0.6" />
+            <path d="M14 44 L16 50 L18 44" fill="#d4a03c" opacity="0.4" />
+            <line x1="11" y1="20" x2="21" y2="20" stroke="#e8be5a" stroke-width="0.5" opacity="0.25" />
+            <line x1="11" y1="32" x2="21" y2="32" stroke="#e8be5a" stroke-width="0.5" opacity="0.25" />
+        </symbol>
+    </svg>
+
+    <script>
+        // Stars
+        const starsEl = document.getElementById('stars');
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            star.className = 'star ' + (Math.random() > 0.5 ? 'twinkle' : 'twinkle-slow');
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 70 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            const size = 1 + Math.random() * 2.5;
+            star.style.width = size + 'px'; star.style.height = size + 'px';
+            starsEl.appendChild(star);
+        }
+
+        // Fawanees
+        const lanternsEl = document.getElementById('lanterns');
+        const lanternData = [
+            { left: '4%', top: '10%', delay: '0s', dur: '7s', size: 28 },
+            { left: '14%', top: '5%', delay: '1.5s', dur: '9s', size: 24 },
+            { left: '90%', top: '8%', delay: '0.8s', dur: '8s', size: 26 },
+            { left: '78%', top: '16%', delay: '2.2s', dur: '7.5s', size: 22 },
+            { left: '48%', top: '3%', delay: '3s', dur: '10s', size: 30 },
+            { left: '62%', top: '14%', delay: '1s', dur: '8.5s', size: 24 },
+            { left: '30%', top: '7%', delay: '2.8s', dur: '9.5s', size: 20 },
+            { left: '85%', top: '22%', delay: '0.3s', dur: '7.8s', size: 22 },
+        ];
+
+        lanternData.forEach(d => {
+            const l = document.createElement('div');
+            l.className = 'lantern';
+            l.style.left = d.left; l.style.top = d.top;
+            l.style.animationDelay = d.delay;
+            l.style.animationDuration = d.dur;
+            l.innerHTML = `<svg width="${d.size}" height="${d.size * 1.625}"><use href="#fanoos"/></svg>`;
+            lanternsEl.appendChild(l);
+        });
+
+        // DOM
+        const progressEl = document.getElementById('progress');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const timeLabelEl = document.getElementById('timeLabel');
+        const percentDisplay = document.getElementById('percentDisplay');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusText = document.getElementById('statusText');
+        const messageEl = document.getElementById('message');
+        const pbarFill = document.getElementById('pbarFill');
+        const pbarPct = document.getElementById('pbarPct');
+        const alarmOverlay = document.getElementById('alarmOverlay');
+        const alarmDismiss = document.getElementById('alarmDismiss');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsOverlay = document.getElementById('settingsOverlay');
+        const settingsClose = document.getElementById('settingsClose');
+        const settingsSave = document.getElementById('settingsSave');
+        const tzSelect = document.getElementById('tzSelect');
+        const startTimeInput = document.getElementById('startTimeInput');
+        const endTimeInput = document.getElementById('endTimeInput');
+        const toast = document.getElementById('toast');
+        const subtitleTime = document.getElementById('subtitleTime');
+        const infoStart = document.getElementById('infoStart');
+        const infoEnd = document.getElementById('infoEnd');
+        const timeMarkers = document.getElementById('timeMarkers');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+
+        const circumference = 2 * Math.PI * 140;
+        progressEl.style.strokeDasharray = circumference;
+
+        let config = {
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            startHour: 8, startMin: 0, endHour: 15, endMin: 0
+        };
+
+        try {
+            const saved = localStorage.getItem('ramadan-clock-config');
+            if (saved) Object.assign(config, JSON.parse(saved));
+        } catch (e) { }
+
+        let alarmTriggered = false;
+        let alarmInterval = null;
+
+        const commonTimezones = [
+            'Africa/Cairo', 'Africa/Casablanca', 'Africa/Johannesburg', 'Africa/Lagos', 'Africa/Nairobi',
+            'America/Bogota', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'America/New_York',
+            'America/Sao_Paulo', 'America/Toronto',
+            'Asia/Amman', 'Asia/Baghdad', 'Asia/Bahrain', 'Asia/Beirut', 'Asia/Colombo', 'Asia/Dhaka',
+            'Asia/Dubai', 'Asia/Ho_Chi_Minh', 'Asia/Hong_Kong', 'Asia/Istanbul', 'Asia/Jakarta',
+            'Asia/Jerusalem', 'Asia/Karachi', 'Asia/Kolkata', 'Asia/Kuala_Lumpur', 'Asia/Kuwait',
+            'Asia/Manila', 'Asia/Muscat', 'Asia/Qatar', 'Asia/Riyadh', 'Asia/Seoul', 'Asia/Shanghai',
+            'Asia/Singapore', 'Asia/Taipei', 'Asia/Tehran', 'Asia/Tokyo',
+            'Australia/Melbourne', 'Australia/Sydney',
+            'Europe/Berlin', 'Europe/London', 'Europe/Madrid', 'Europe/Moscow', 'Europe/Paris', 'Europe/Rome',
+            'Pacific/Auckland', 'Pacific/Honolulu', 'UTC'
+        ];
+
+        function populateTimezones() {
+            let allTz = [...commonTimezones];
+            if (!allTz.includes(config.timezone)) allTz.unshift(config.timezone);
+            allTz.sort();
+            tzSelect.innerHTML = '';
+            allTz.forEach(tz => {
+                const opt = document.createElement('option');
+                opt.value = tz;
+                opt.textContent = `${tz.replace(/_/g, ' ')} (UTC${getTimezoneOffset(tz)})`;
+                if (tz === config.timezone) opt.selected = true;
+                tzSelect.appendChild(opt);
+            });
+        }
+
+        function getTimezoneOffset(tz) {
+            try {
+                const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(new Date());
+                const p = parts.find(p => p.type === 'timeZoneName');
+                return p ? p.value.replace('GMT', '') || '+0' : '';
+            } catch { return ''; }
+        }
+
+        settingsBtn.addEventListener('click', () => {
+            populateTimezones();
+            startTimeInput.value = pad(config.startHour) + ':' + pad(config.startMin);
+            endTimeInput.value = pad(config.endHour) + ':' + pad(config.endMin);
+            settingsOverlay.classList.add('show');
+        });
+
+        settingsClose.addEventListener('click', () => settingsOverlay.classList.remove('show'));
+        settingsOverlay.addEventListener('click', e => {
+            if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
+        });
+
+        settingsSave.addEventListener('click', () => {
+            const [sh, sm] = startTimeInput.value.split(':').map(Number);
+            const [eh, em] = endTimeInput.value.split(':').map(Number);
+            if (sh * 60 + sm >= eh * 60 + em) { alert('End time must be after start time.'); return; }
+
+            config.timezone = tzSelect.value;
+            config.startHour = sh; config.startMin = sm;
+            config.endHour = eh; config.endMin = em;
+
+            try { localStorage.setItem('ramadan-clock-config', JSON.stringify(config)); } catch (e) { }
+
+            alarmTriggered = false;
+            if (alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
+            alarmOverlay.classList.remove('show');
+            updateUI();
+            settingsOverlay.classList.remove('show');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        });
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function formatTime12(h, m) {
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            return `<span>${h % 12 || 12}:${pad(m)}</span> ${ampm}`;
+        }
+
+        function formatTimeShort(h, m) {
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            return m === 0 ? `${h % 12 || 12} ${ampm}` : `${h % 12 || 12}:${pad(m)}`;
+        }
+
+        function getNowInTimezone() {
+            return new Date(new Date().toLocaleString('en-US', { timeZone: config.timezone }));
+        }
+
+        function updateUI() {
+            subtitleTime.textContent = `${formatTimeShort(config.startHour, config.startMin)} \u2014 ${formatTimeShort(config.endHour, config.endMin)}`;
+            infoStart.innerHTML = formatTime12(config.startHour, config.startMin);
+            infoEnd.innerHTML = formatTime12(config.endHour, config.endMin);
+
+            const startM = config.startHour * 60 + config.startMin;
+            const endM = config.endHour * 60 + config.endMin;
+            const span = endM - startM;
+            const markers = [];
+            for (let i = 0; i < 5; i++) {
+                const t = startM + Math.round((span * i) / 4);
+                markers.push(formatTimeShort(Math.floor(t / 60), t % 60));
+            }
+            timeMarkers.innerHTML = markers.map(m => `<span>${m}</span>`).join('');
+        }
+
+        function playAlarmChime() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function chime(freq, start, dur) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine'; osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.22, start);
+                    gain.gain.exponentialRampToValueAtTime(0.004, start + dur);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(start); osc.stop(start + dur);
+                }
+                const t = ctx.currentTime;
+                for (let r = 0; r < 3; r++) {
+                    const b = t + r * 1.8;
+                    chime(659, b, 0.4); chime(880, b + 0.22, 0.4);
+                    chime(1047, b + 0.44, 0.5); chime(1319, b + 0.7, 0.8);
+                }
+            } catch (e) { }
+        }
+
+        function triggerAlarm() {
+            if (alarmTriggered) return;
+            alarmTriggered = true;
+            alarmOverlay.classList.add('show');
+            playAlarmChime();
+            alarmInterval = setInterval(playAlarmChime, 6000);
+        }
+
+        alarmDismiss.addEventListener('click', () => {
+            alarmOverlay.classList.remove('show');
+            if (alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
+        });
+
+        function update() {
+            const now = getNowInTimezone();
+            const currentSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const startSec = config.startHour * 3600 + config.startMin * 60;
+            const endSec = config.endHour * 3600 + config.endMin * 60;
+            const totalSec = endSec - startSec;
+
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const shortTz = config.timezone.split('/').pop().replace(/_/g, ' ');
+            currentTimeDisplay.textContent = `${timeStr} \u00B7 ${shortTz}`;
+
+            if (currentSec < startSec) {
+                const diff = startSec - currentSec;
+                hoursEl.textContent = pad(Math.floor(diff / 3600));
+                minutesEl.textContent = pad(Math.floor((diff % 3600) / 60));
+                secondsEl.textContent = pad(diff % 60);
+                timeLabelEl.textContent = 'Until Work Starts';
+                progressEl.style.strokeDashoffset = circumference;
+                pbarFill.style.width = '0%'; pbarPct.textContent = '0%';
+                percentDisplay.innerHTML = '<span>0</span>%';
+                statusBadge.className = 'status inactive';
+                statusText.textContent = 'Not Started';
+                messageEl.textContent = `Work begins at ${formatTimeShort(config.startHour, config.startMin)}`;
+            } else if (currentSec >= endSec) {
+                hoursEl.textContent = '00'; minutesEl.textContent = '00'; secondsEl.textContent = '00';
+                timeLabelEl.textContent = 'Completed';
+                progressEl.style.strokeDashoffset = 0;
+                pbarFill.style.width = '100%'; pbarPct.textContent = '100%';
+                percentDisplay.innerHTML = '<span>100</span>%';
+                statusBadge.className = 'status inactive';
+                statusText.textContent = 'Day Complete';
+                messageEl.textContent = 'Alhamdulillah \u2014 rest well!';
+                triggerAlarm();
+            } else {
+                const elapsed = currentSec - startSec;
+                const remaining = endSec - currentSec;
+                hoursEl.textContent = pad(Math.floor(remaining / 3600));
+                minutesEl.textContent = pad(Math.floor((remaining % 3600) / 60));
+                secondsEl.textContent = pad(remaining % 60);
+                timeLabelEl.textContent = 'Remaining';
+
+                const pct = Math.floor((elapsed / totalSec) * 100);
+                const pctExact = ((elapsed / totalSec) * 100).toFixed(1);
+                const offset = circumference - (elapsed / totalSec) * circumference;
+                progressEl.style.strokeDashoffset = offset;
+                pbarFill.style.width = pctExact + '%';
+                pbarPct.textContent = pct + '%';
+                percentDisplay.innerHTML = `<span>${pct}</span>%`;
+                statusBadge.className = 'status active';
+                statusText.textContent = 'Working Hours';
+                messageEl.textContent = '';
+            }
+        }
+
+        updateUI();
+        update();
+        setInterval(update, 1000);
+    </script>
+</body>
+
+</html>
